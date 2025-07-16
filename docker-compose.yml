@@ -1,0 +1,71 @@
+services:
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/config/config.yml
+    volumes:
+      - ./loki-config.yml:/etc/loki/config/config.yml
+      - ./loki_data:/loki
+    networks:
+      - monitoring
+    restart: always
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log
+      - /run/log/journal:/run/log/journal:ro  # for journald logs (Fail2Ban, Postfix, Dovecot)
+      - ./promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - monitoring
+    restart: always
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    networks:
+      - monitoring
+    ports:
+      - "3000:3000"
+    volumes:
+      - /opt/monitoring/grafana:/var/lib/grafana
+      - ./certs/fullchain.pem:/etc/grafana/certs/fullchain.pem:ro
+      - ./certs/privkey.pem:/etc/grafana/certs/privkey.pem:ro
+    environment:
+      - GF_SERVER_PROTOCOL=https
+      - GF_SERVER_CERT_FILE=/etc/grafana/certs/fullchain.pem
+      - GF_SERVER_CERT_KEY=/etc/grafana/certs/privkey.pem  
+    restart: always
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks: 
+      - monitoring
+     
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: grafana-node_exporter-1
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'   
+    networks:
+      - monitoring    
+
+networks:
+  monitoring:
+    driver: bridge
