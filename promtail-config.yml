@@ -1,0 +1,43 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: system-logs
+    journal:
+      path: /run/log/journal
+      labels:
+        job: systemd-journal
+    relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        target_label: 'unit'
+
+  - job_name: fail2ban
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: fail2ban
+          __path__: /var/log/fail2ban.log
+    pipeline_stages:
+      - regex:
+          expression: '.*? (Ban|Unban) .*? from (?P<ip>\d+\.\d+\.\d+\.\d+)'
+      - labels:
+          ip:
+          action:            
+
+  - job_name: 'postfix'
+    journal:
+      path: /var/log/journal
+      labels:
+        job: postfix
+    relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        regex: 'postfix.*'
+        action: keep
