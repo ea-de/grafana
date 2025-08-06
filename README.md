@@ -1,5 +1,7 @@
-Project Setup Guide
-📂 Clone the Repository
+### This Project was created to gather metrics from my personal mail server, along with fail2ban information and mail logs. 
+It uses the Grafana, prometheus, promtail & loki stack. I also automated letsencrypt certs to secure the grafana dashboard
+
+
 
 Clone all project files into the same directory:
 
