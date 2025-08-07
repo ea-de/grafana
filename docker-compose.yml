@@ -49,7 +49,6 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
     networks:
       - monitoring
-  
   node-exporter:
     image: prom/node-exporter:latest
     container_name: grafana-node_exporter-1
