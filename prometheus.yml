@@ -8,4 +8,4 @@ scrape_configs:
   
   - job_name: 'node_exporter'
     static_configs:
-      - targets: ['grafana-node_exporter-1:9100']  # or your host IP if not on Docker for Windows/macOS
+      - targets: ['grafana-node_exporter-1:9100']
