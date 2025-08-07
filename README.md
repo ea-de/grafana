@@ -1,5 +1,5 @@
-### This Project was created to gather metrics from my personal mail server, along with fail2ban information and mail logs. 
-It uses the Grafana, prometheus, promtail & loki stack. I also automated letsencrypt certs to secure the grafana dashboard
+### Created to gather metrics from my personal mail server, along with fail2ban information and mail logs. 
+It uses the Grafana, prometheus, promtail & loki stack. I also automated letsencrypt certs to secure the grafana dashboard.
 
 
 
@@ -15,15 +15,17 @@ Create a directory for certificates:
 
 Configure a Let's Encrypt renewal hook to copy the updated certificates into the certs directory and set the correct owner:
 
-Create a script in /etc/letsencrypt/renewal-hooks/deploy/:
+Create a deployment hook script:
 
+    /etc/letsencrypt/renewal-hooks/deploy/hook.sh
+#
     #!/bin/bash
     cp /etc/letsencrypt/live/<your-domain>/* /path/to/your/project/certs/
     chown -R <grafana-docker-user>:<grafana-docker-user-group> /path/to/your/project/certs/
 
 Make it executable:
 
-    chmod +x /etc/letsencrypt/renewal-hooks/deploy/<script-name>.sh
+    chmod +x /etc/letsencrypt/renewal-hooks/deploy/hook.sh
 
 ✅ This ensures certificates are renewed and available for Grafana.
 📊 Import Dashboards into Grafana
