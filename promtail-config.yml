@@ -30,7 +30,7 @@ scrape_configs:
           expression: '.*? (Ban|Unban) .*? from (?P<ip>\d+\.\d+\.\d+\.\d+)'
       - labels:
           ip:
-          action:            
+          action:
 
   - job_name: 'postfix'
     journal:
